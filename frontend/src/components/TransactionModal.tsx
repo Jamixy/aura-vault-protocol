@@ -37,6 +37,7 @@ type TxStatus = "idle" | "pending" | "success" | "error";
 interface Props {
   type: TxType;
   balance: string;
+  initialAmount?: string;
   /** Current share price used to estimate shares / tokens in the review step. Defaults to "1.0". */
   sharePrice?: string;
   onClose: () => void;
@@ -387,9 +388,9 @@ function AdvancedSettingsPanel({ settings, isOpen, onToggle, onChange }: Advance
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export default function TransactionModal({ type, balance, sharePrice = "1.0", sharePriceUpdatedAt, onClose }: Props) {
+export default function TransactionModal({ type, balance, initialAmount = "", sharePrice = "1.0", sharePriceUpdatedAt, onClose }: Props) {
   const [step, setStep] = useState<Step>(1);
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(initialAmount);
   const [amountError, setAmountError] = useState("");
   const [status, setStatus] = useState<TxStatus>("idle");
   const [txHash, setTxHash] = useState("");

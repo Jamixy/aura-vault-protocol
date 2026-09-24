@@ -10,21 +10,25 @@
  *   - × on failure (auto-resets after 2 s)
  */
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import TransactionModal from "./TransactionModal";
 import DepositButton, { type ButtonTxState } from "./DepositButton";
 import { useOnboarding } from "@/components/OnboardingChecklist";
 
 type Tab = "deposit" | "withdraw";
 
-export default function VaultActions() {
+function VaultActionsContent() {
   const [tab, setTab] = useState<Tab>("deposit");
   const [modal, setModal] = useState<Tab | null>(null);
+  const [initialAmount, setInitialAmount] = useState("");
   const [balance, setBalance] = useState("1000");
   const [depositState, setDepositState] = useState<ButtonTxState>("idle");
   const [sharePrice, setSharePrice] = useState("1.0");
   const [sharePriceUpdatedAt, setSharePriceUpdatedAt] = useState<number | undefined>(undefined);
   const { markComplete } = useOnboarding();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     fetch("/api/vault/balance_of?address=mock")
@@ -35,12 +39,32 @@ export default function VaultActions() {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    const action = searchParams.get("action");
+    if (action !== "deposit" && action !== "withdraw") return;
+
+    const amountParam = searchParams.get("amount") ?? "";
+    const amount = /^(?:\d+\.?\d*|\.\d+)$/.test(amountParam) && Number(amountParam) > 0
+      ? amountParam
+      : "";
+
+    setTab(action);
+    setInitialAmount(action === "deposit" ? amount : "");
+    setModal(action);
+  }, [searchParams]);
+
   /**
    * Called when TransactionModal closes.
    * Accepts an optional outcome so we can animate the button.
    */
   function handleModalClose(type: Tab, outcome?: "success" | "error") {
     setModal(null);
+    setInitialAmount("");
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("action");
+    params.delete("amount");
+    const query = params.toString();
+    router.replace(`${window.location.pathname}${query ? `?${query}` : ""}`, { scroll: false });
     if (type === "deposit") {
       markComplete("make_first_deposit");
       if (outcome === "success") {
@@ -124,11 +148,20 @@ export default function VaultActions() {
         <TransactionModal
           type={modal}
           balance={balance}
+          initialAmount={initialAmount}
           sharePrice={sharePrice}
           sharePriceUpdatedAt={sharePriceUpdatedAt}
           onClose={() => handleModalClose(modal)}
         />
       )}
     </section>
+  );
+}
+
+export default function VaultActions() {
+  return (
+    <Suspense fallback={null}>
+      <VaultActionsContent />
+    </Suspense>
   );
 }
