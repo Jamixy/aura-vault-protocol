@@ -8,6 +8,7 @@ import { FinancialValue } from "./FinancialValue";
 import { EmptyState } from "./EmptyState";
 import { AnimatedShareBalance } from "./AnimatedShareBalance";
 import { useAnimatedNumber } from "@/lib/useAnimatedNumber";
+import type { DeepLinkAction } from "@/lib/useDeepLink";
 
 interface VaultStats {
   tvl: string;
@@ -141,7 +142,15 @@ const MOCK_TXS: Transaction[] = [
   },
 ];
 
-export default function VaultDashboard() {
+export default function VaultDashboard({
+  initialAction = null,
+  initialAmount = null,
+  onDeepLinkHandled,
+}: {
+  initialAction?: DeepLinkAction | null;
+  initialAmount?: string | null;
+  onDeepLinkHandled?: () => void;
+}) {
   const [stats, setStats] = useState<VaultStats | null>(null);
   const [txs] = useState<Transaction[]>(MOCK_TXS);
   const [loading, setLoading] = useState(true);
@@ -425,7 +434,11 @@ fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/vault/apy`),
             Actions
           </h2>
 
-          <VaultActions />
+          <VaultActions
+            initialAction={initialAction}
+            initialAmount={initialAmount}
+            onDeepLinkHandled={onDeepLinkHandled}
+          />
         </section>
       </div>
 
