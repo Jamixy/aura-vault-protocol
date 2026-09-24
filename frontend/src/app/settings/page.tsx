@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import AddressBook from "@/components/AddressBook";
 import "@/lib/i18n";
 
 interface Settings {
@@ -166,6 +167,17 @@ export default function SettingsPage() {
                 className="h-4 w-4 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500"
               />
             </label>
+          </div>
+        </section>
+
+        {/* Address Book — Issue #258 */}
+        <section className="mb-8">
+          <h2 className="text-lg font-medium mb-3">Address Book</h2>
+          <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 bg-white dark:bg-zinc-900">
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
+              Save and label frequently used Stellar addresses for quick access during withdrawals.
+            </p>
+            <AddressBook />
           </div>
         </section>
 
