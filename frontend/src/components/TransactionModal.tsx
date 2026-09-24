@@ -399,6 +399,8 @@ export default function TransactionModal({ type, balance, sharePrice = "1.0", sh
   const [retryCount, setRetryCount] = useState(0);
   const [advancedSettings, setAdvancedSettings] = useState<AdvancedSettingsState>(() => readAdvancedSettingsState());
   const inputRef = useRef<HTMLInputElement>(null);
+  const touchStartY = useRef<number | null>(null);
+  const [dragOffset, setDragOffset] = useState(0);
   const { vibrate } = useHapticsStandalone();
 
   useEffect(() => {
@@ -508,6 +510,24 @@ export default function TransactionModal({ type, balance, sharePrice = "1.0", sh
     void handleSubmit(true);
   }
 
+  function handleTouchStart(event: React.TouchEvent<HTMLDivElement>) {
+    touchStartY.current = event.touches[0]?.clientY ?? null;
+  }
+
+  function handleTouchMove(event: React.TouchEvent<HTMLDivElement>) {
+    if (touchStartY.current === null) return;
+    const offset = event.touches[0].clientY - touchStartY.current;
+    if (offset > 0) setDragOffset(offset);
+  }
+
+  function handleTouchEnd() {
+    if (dragOffset > 100) {
+      onClose();
+    }
+    touchStartY.current = null;
+    setDragOffset(0);
+  }
+
   const labelMap: Record<TxType, string> = { deposit: "Deposit", withdraw: "Withdraw", harvest: "Harvest" };
   const label = labelMap[type];
   const balanceNum = parseFloat(balance);
@@ -528,17 +548,27 @@ export default function TransactionModal({ type, balance, sharePrice = "1.0", sh
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-modal-backdrop"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 animate-modal-backdrop sm:items-center"
       role="dialog"
       aria-modal="true"
       aria-label={`${label} modal`}
       data-cy="tx-modal"
     >
-      <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-zinc-900 animate-modal-content">
+      <div
+        className="relative w-full max-w-md max-h-[100dvh] overflow-y-auto overscroll-contain rounded-t-2xl bg-white px-4 pb-[env(safe-area-inset-bottom)] pt-5 shadow-xl dark:bg-zinc-900 animate-modal-content sm:max-h-[90vh] sm:rounded-2xl sm:p-6 [&_button]:min-h-11"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{
+          transform: `translateY(${dragOffset}px)`,
+          transition: dragOffset === 0 ? "transform 180ms ease-out" : "none",
+        }}
+      >
+        <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-zinc-300 dark:bg-zinc-700 sm:hidden" aria-hidden="true" />
         <button
           data-cy="modal-close"
           onClick={onClose}
-          className="absolute right-4 top-4 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+          className="absolute right-2 top-2 flex min-h-11 min-w-11 items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
           aria-label="Close"
         >
           ✕
@@ -568,6 +598,7 @@ export default function TransactionModal({ type, balance, sharePrice = "1.0", sh
               ref={inputRef}
               data-cy="modal-amount-input"
               type="number"
+              inputMode="decimal"
               min="0"
               step="any"
               placeholder="0.00"
@@ -576,7 +607,7 @@ export default function TransactionModal({ type, balance, sharePrice = "1.0", sh
                 setAmount(e.target.value);
                 setAmountError("");
               }}
-              className="rounded-lg border border-zinc-300 px-4 py-2.5 font-mono text-lg focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+              className="w-full min-w-0 rounded-lg border border-zinc-300 px-4 py-2.5 font-mono text-lg focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
             />
 
             {/* Quick amount buttons */}
@@ -589,7 +620,7 @@ export default function TransactionModal({ type, balance, sharePrice = "1.0", sh
                     setAmount(amt.toFixed(2));
                     setAmountError("");
                   }}
-                  className="flex-1 rounded-md bg-zinc-100 px-2 py-1.5 text-xs font-medium hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700"
+                  className="flex min-h-11 flex-1 items-center justify-center rounded-md bg-zinc-100 px-2 py-1.5 text-xs font-medium hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700"
                 >
                   {pct}%
                 </button>
@@ -610,7 +641,7 @@ export default function TransactionModal({ type, balance, sharePrice = "1.0", sh
             <button
               data-cy="modal-next-btn"
               onClick={() => void handleNext()}
-              className="rounded-lg bg-zinc-900 px-4 py-2.5 font-semibold text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-300"
+              className="min-h-11 rounded-lg bg-zinc-900 px-4 py-2.5 font-semibold text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-300"
             >
               Next
             </button>

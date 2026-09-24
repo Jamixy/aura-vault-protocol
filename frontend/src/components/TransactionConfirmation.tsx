@@ -265,7 +265,7 @@ export default function TransactionConfirmation({
           aria-label="Go back and edit transaction"
           onClick={onBack}
           data-cy="tx-confirmation-back-btn"
-          className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800 transition-colors"
+          className="flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-lg border border-zinc-300 px-4 py-2.5 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 dark:border-zinc-600 dark:text-zinc-300 dark:hover:bg-zinc-800 transition-colors"
         >
           <ArrowLeft size={15} aria-hidden="true" />
           Back
@@ -275,7 +275,7 @@ export default function TransactionConfirmation({
           aria-label={`Confirm ${typeLabel[type].toLowerCase()} transaction`}
           onClick={onConfirm}
           data-cy="tx-confirmation-confirm-btn"
-          className="flex-1 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-300 transition-colors"
+          className="min-h-11 flex-1 rounded-lg bg-zinc-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-300 transition-colors"
         >
           Confirm &amp; Sign
         </button>
