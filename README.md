@@ -6,6 +6,11 @@ A production-ready, share-based yield vault smart contract built on **Soroban** 
 
 Aura solves fragmented liquidity and manual yield compounding in Soroban DeFi. It aggregates deposits of a single SEP-41-compatible underlying token, issues proportional vault shares to depositors, and auto-compounds yield through permissionless keeper harvests — all in a trust-minimized, `no_std` on-chain environment.
 
+## Application Flows
+
+- **Mobile transactions** — Deposit and withdraw flows use a responsive bottom sheet on small screens, decimal amount input, swipe-down dismissal, safe-area spacing, and touch targets sized for accessible use.
+- **Admin controls** — The restricted `/admin` panel verifies the vault admin on the client and server, supports pause/unpause and Wasm upgrade requests, shows governance signer requirements, and records actions in the audit trail.
+
 ## How It Works
 
 - **Deposit** — Transfer underlying tokens into the vault and receive shares proportional to your contribution. First depositor gets a 1:1 seed ratio; subsequent depositors get `floor(amount × total_shares / total_assets)` shares.
