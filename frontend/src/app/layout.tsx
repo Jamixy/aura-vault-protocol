@@ -51,6 +51,7 @@ export default function RootLayout({
                 <nav className="flex gap-4 text-sm" aria-label="Main navigation">
                   <a href="/faq" className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">FAQ</a>
                   <a href="/settings" className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Settings</a>
+                  <a href="/admin" className="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Admin</a>
                 </nav>
                 {/* Notification bell — after nav links, before LanguageSwitcher */}
                 <NotificationCenter />

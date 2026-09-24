@@ -34,6 +34,7 @@ import { startYieldWorker, stopYieldWorker } from "./services/yieldWorker.js";
 import { vaultRouter } from "./routes/vaultRoutes.js";
 import { userPreferencesRouter } from "./routes/userPreferencesRoutes.js";
 import { leaderboardRouter } from "./routes/leaderboardRoutes.js";
+import { adminRouter } from "./routes/adminRoutes.js";
 import {
   applySecurityHeaders,
   corsOptions,
@@ -132,6 +133,7 @@ app.use("/api/v1/gas", gasRouter);
 app.use("/api/v1/yield", yieldRouter);
 app.use("/api/v1/queue", queueRouter);
 app.use("/api/v1/vault", vaultRouter);
+app.use("/api/admin", adminRouter);
 // Issue #322: Public leaderboard endpoint — no auth required (truncated addresses only)
 app.use("/api/vault/leaderboard", leaderboardRouter);
 // Issue #318: User preferences — requires authentication
